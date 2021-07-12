@@ -15,3 +15,15 @@ Représentation de l'infrastructure
 
 ## Pré-requis
 Vous aurez besoin d'un compte AWS : https://aws.amazon.com/fr/
+
+
+## Objectifs
+
+À l'aide d'un template (script) '.yml'; mettre en place d'un serveur WordPress (le site de l’entreprise) sur AWS en utilisant :
+  - RDS pour le stockage de la base de données
+  - S3 pour le stockage des médias (via le plugin amazon-web-services)
+  - EC2 et Docker pour le serveur web
+  - ELB pour distribuer les requêtes sur les instances EC2
+  - CloudFormation pour automatiser la création de l’infrastructure
+
+Tous les éléments de l'infrastructure publique sont être répartis sur plusieurs zones de disponibilité (multi-AZ). La répartition des requêtes vers les différentes zones de disponibilité (AZ) est effectuée avec ELB (Elastic Load Balancer).
