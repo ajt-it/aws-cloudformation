@@ -29,4 +29,4 @@ Vous aurez besoin d'un compte AWS : https://aws.amazon.com/fr/
   - ELB pour distribuer les requêtes sur les instances EC2
   - CloudFormation pour automatiser la création de l’infrastructure
 
-Tous les éléments de l'infrastructure publique sont être répartis sur plusieurs zones de disponibilité (multi-AZ). La répartition des requêtes vers les différentes zones de disponibilité (AZ) est effectuée avec ELB (Elastic Load Balancer).
+Tous les éléments de l'infrastructure publique sont répartis sur plusieurs zones de disponibilité (multi-AZ). La répartition des requêtes vers les différentes zones de disponibilité (AZ) est effectuée avec ELB (Elastic Load Balancer).
