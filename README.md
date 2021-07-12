@@ -1,7 +1,6 @@
 https://img.shields.io/badge/apache-2.4-orange
 
 # aws-cloudformation
-Administrisez votre infrastructure cloud
 
 Représentation de l'infrastructure
 
