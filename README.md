@@ -22,7 +22,7 @@ Vous aurez besoin d'un compte AWS : https://aws.amazon.com/fr/
 
 ## Objectifs
 
-À l'aide d'un template (script) '.yml'; mettre en place d'un serveur WordPress (le site de l’entreprise) sur AWS en utilisant :
+À l'aide d'un template (script) '.yml'; mettre en place d'un serveur WordPress sur AWS en utilisant :
   - RDS pour le stockage de la base de données
   - S3 pour le stockage des médias (via le plugin amazon-web-services)
   - EC2 et Docker pour le serveur web
