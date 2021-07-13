@@ -63,23 +63,6 @@ Resources:
           Value: "p10aic-VPC public route 2"   
 
 
-  ########## CREATE ROUTES
-
-  PublicRoute1:
-    Type: AWS::EC2::Route
-    Properties: 
-      DestinationCidrBlock: 0.0.0.0/0
-      GatewayId: !Ref p10aicInternetGateway
-      RouteTableId: !Ref PublicRouteTable1      
-
-  PublicRoute2:
-    Type: AWS::EC2::Route
-    Properties: 
-      DestinationCidrBlock: 0.0.0.0/0
-      GatewayId: !Ref p10aicInternetGateway
-      RouteTableId: !Ref PublicRouteTable2   
-
-  
 
   ########## CREATE BUCKET S3 & BUCKET POLICY
 
@@ -87,28 +70,6 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: p10aic-bucket-wp
-
-  ########## ELASTIC LOAD BALANCER & AUTO SCALING GROUP
-
-  WebsiteLaunchConfig: 
-    Type: AWS::AutoScaling::LaunchConfiguration
-    DependsOn: DatabaseInstance
-    Properties:
-      AssociatePublicIpAddress: true
-      ImageId: ami-0ac43988dfd31ab9a
-      InstanceType: t2.micro
-      KeyName: MasterKey
-      SecurityGroups:
-        - !Ref WebsiteEC2SecurityGroup
-      UserData:
-        "Fn::Base64": !Sub |
-          #!/bin/bash
-          sudo yum update -y
-          sudo yum upgrade -y         
-          sudo rpm -ivh https://repo.mysql.com//mysql57-community-release-el7-11.noarch.rpm         
-          sudo yum install -y mysql-server         
-          sudo yum install -y mysql-client         
-          sudo yum install php-curl -y
 
 
   ########## Creates Auto Scaling Group
@@ -132,33 +93,6 @@ Resources:
       MinSize: 1  
       TargetGroupARNs:
         - !Ref WebsiteTargetGroup
-
-
-  ########## CREATE A LISTNER ON PORT 80
-  
-  WebsiteLoadBalancer:
-    DependsOn: 
-      - PublicSubnet1CIDR
-      - PublicSubnet2CIDR
-    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
-    Properties:
-      Type: application
-      Scheme: internet-facing
-      SecurityGroups:
-        - !Ref WebsiteLoadBalancerSecurityGroup
-      Subnets:
-        - !Ref PublicSubnet1CIDR
-        - !Ref PublicSubnet2CIDR
-
-  WebsiteLoadBlancerListener:
-    Type: AWS::ElasticLoadBalancingV2::Listener
-    Properties: 
-      LoadBalancerArn: !Ref WebsiteLoadBalancer
-      Port: 80
-      Protocol: HTTP
-      DefaultActions:
-        - Type: forward
-          TargetGroupArn: !Ref WebsiteTargetGroup
 
 
   ########## CREATE DATABASE
@@ -199,7 +133,6 @@ Resources:
       AutoScalingGroupName: !Ref WebsiteAutoScalingGroup
       Cooldown: '60'
       ScalingAdjustment: -1
-
 
 
 Outputs:
