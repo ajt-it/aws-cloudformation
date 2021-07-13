@@ -1,9 +1,15 @@
 ![Apache 2.0](https://img.shields.io/badge/apache-2.0-orange)
 
 
-# aws-cloudformation
+# AWS-Infrastructure as Code (IaC)
 
-Administration d'une infrastructure cloud (AWS) grâce à l'automatisation de la création de l’ensemble des ressources via un stack de CloudFomation. 
+Administration d'une infrastructure cloud (AWS) grâce à l'automatisation de la création de l’ensemble des ressources via un stack CloudFormation.
+
+Souvent plébiscité dans le cadre du cloud computing, l'infrastructure as code offre aux développeurs 
+la possibilité d'automatiser leurs déploiements de manière à éviter les tâches manuelles ou encore de 
+devoir écrire d'eux-mêmes les appels aux interfaces de programmation. 
+Cette technologie constitue une réponse aux besoins des entreprises en termes de mise à l'échelle des 
+applications axée sur l'automatisation et la simplification de l'infrastructure de projets informatiques. 
 
 
 ## Représentation de l'infrastructure
