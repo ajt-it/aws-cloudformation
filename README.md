@@ -14,7 +14,7 @@ applications axée sur l'automatisation et la simplification de l'infrastructure
 
 ## Représentation de l'infrastructure
 
-![Infra (cloud_aws) - p10aic - wordpress](https://user-images.githubusercontent.com/46109209/126868010-680c9989-29a6-43cd-974e-79c4e4825084.png)
+![Infra - p10aic - wordpress](https://user-images.githubusercontent.com/46109209/128689693-04376346-147a-40f9-93e9-b8e874b1b371.png)
 
 ## Langage
 
