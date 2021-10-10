@@ -1,4 +1,4 @@
-![Apache 2.0](https://img.shields.io/badge/apache-2.0-orange)
+![Apache 2.0](https://img.shields.io/badge/apache-2.0-orange) ![Licence GPL-3.0](https://img.shields.io/badge/Licence-GPL_3.0-red)
 
 
 # AWS-Infrastructure as Code (IaC)
@@ -16,9 +16,12 @@ applications axée sur l'automatisation et la simplification de l'infrastructure
 
 ![Infra - p10aic - wordpress](https://user-images.githubusercontent.com/46109209/128689693-04376346-147a-40f9-93e9-b8e874b1b371.png)
 
-## Langage
+
+## Langages
 
  - :white_check_mark: YAML
+
+ - :white_check_mark: SHELL
 
 
 ## Pré-requis
@@ -35,3 +38,29 @@ Vous aurez besoin d'un compte AWS : https://aws.amazon.com/fr/
   - CloudFormation pour automatiser la création de l’infrastructure
 
 Tous les éléments de l'infrastructure publique sont répartis sur plusieurs zones de disponibilité (multi-AZ). La répartition des requêtes vers les différentes zones de disponibilité (AZ) est effectuée avec ELB (Elastic Load Balancer).
+
+
+## Technologies
+
+Liste des technologies AWS utilisées :
+
+- aws CloudFormation
+- aws EC2
+- aws RDS
+- aws S3
+- aws Simple Notification Service
+- aws VPC
+- aws CloudWatch
+- Docker
+- Wordpress
+- Amazon Linux 2 OS
+
+
+## Ressources
+
+- https://docs.aws.amazon.com/
+- https://docs.docker.com/
+- https://deliciousbrains.com/wp-offload-media/
+- https://wp-cli.org/fr/
+- https://www.google.com/
+
