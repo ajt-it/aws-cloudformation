@@ -14,10 +14,11 @@ applications axée sur l'automatisation et la simplification de l'infrastructure
 
 ## Représentation de l'infrastructure
 
-![Infra - p10aic - wordpress](https://user-images.githubusercontent.com/46109209/128689693-04376346-147a-40f9-93e9-b8e874b1b371.png)
+![infra aws](https://user-images.githubusercontent.com/46109209/138763086-9d9c4728-3328-4256-9fcd-4514f5f09009.png)
 
 
 ## Langages
+
 
  - :white_check_mark: YAML
 
@@ -38,6 +39,10 @@ Vous aurez besoin d'un compte AWS : https://aws.amazon.com/fr/
   - CloudFormation pour automatiser la création de l’infrastructure
 
 Tous les éléments de l'infrastructure publique sont répartis sur plusieurs zones de disponibilité (multi-AZ). La répartition des requêtes vers les différentes zones de disponibilité (AZ) est effectuée avec ELB (Elastic Load Balancer).
+
+Mettre en place une liaison VPN entre un serveur VPN local et le sous-réseau privé AWS via une instance EC2.
+
+La mise en place de l’auto-scaling sur les instances EC2 permettra d'augmenter le nombre de machines dès que la charge CPU des serveurs atteint 80% en moyenne sur 5 minutes et une alerte par email est envoyée à chaque fois que l'événement survient.
 
 
 ## Technologies
