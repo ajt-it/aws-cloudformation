@@ -25,14 +25,6 @@ Resources:
         - Key: Name
           Value: 'ajt | VPC'
 
-
-########## CREATE SUBNETS CIDR
-
-
-
-
-########## LINK Route Table 1 & 2 to public subnet WordPress Website
-
   # - LINK ROUTE TABLE 1 TO PUBLIC SUBNET 1
   AttachPublicRouteTable1:
     Type: AWS::EC2::SubnetRouteTableAssociation
@@ -90,15 +82,7 @@ Resources:
 
   WebsiteLaunchConfig: 
     Type: AWS::AutoScaling::LaunchConfiguration
-    DependsOn: DatabaseInstance
-    Properties:
-      SecurityGroups:
-        - !Ref WebsiteEC2SecurityGroup
-      UserData:
-        "Fn::Base64": !Sub |
-          #!/bin/bash
-          sudo yum update -y
-          sudo yum upgrade -y                 
+    DependsOn: DatabaseInstance  
 
   ########## Creates Auto Scaling Group
 
@@ -120,81 +104,6 @@ Resources:
 
   ########## CREATE A LISTNER ON PORT 80
   
-  WebsiteLoadBalancer:
-    DependsOn: 
-      - PublicSubnet1CIDR
-      - PublicSubnet2CIDR
-    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
-    Properties:
-      Type: application
-      Scheme: internet-facing
-      SecurityGroups:
-        - !Ref WebsiteLoadBalancerSecurityGroup
-      Subnets:
-        - !Ref PublicSubnet1CIDR
-        - !Ref PublicSubnet2CIDR
-
-  WebsiteLoadBlancerListener:
-    Type: AWS::ElasticLoadBalancingV2::Listener
-    Properties: 
-      LoadBalancerArn: !Ref WebsiteLoadBalancer
-      Port: 80
-      Protocol: HTTP
-      DefaultActions:
-        - Type: forward
-          TargetGroupArn: !Ref WebsiteTargetGroup
-
-
-########## CREATE DATABASE
-
-
-
-########## AUTO SCALING GROUP RULES
-
-
-
-########## SET UP ALARM FOR METRICS
-
-  CPUAlarmHigh:
-    DependsOn: WebsiteAutoScalingGroup
-    Type: AWS::CloudWatch::Alarm
-        - Name: AutoScalingGroupName
-          Value: !Ref WebsiteAutoScalingGroup
-      ComparisonOperator: GreaterThanThreshold
-
-  CPUAlarmLow:
-    DependsOn: WebsiteAutoScalingGroup
-    Type: AWS::CloudWatch::Alarm
-          Value: !Ref WebsiteAutoScalingGroup
-      ComparisonOperator: LessThanThreshold             
-
-
-# Sous-réseaux PRIVATE & PUBLIC VPN
-  PrivateSubnet:
-    Type: 'AWS::EC2::Subnet'
-    Properties:
-      MapPublicIpOnLaunch: true
-      Tags:
-      - Key: Name
-        Value: 'ajtVPN sub-pub-infra'
-
-
-# Passerelles NAT
-  NatEip:
-    Type: AWS::EC2::EIP
-    Properties:
-      Domain: vpc
-  NatGateway:
-    DependsOn: ajtAttachInternetGateway
-    Type: AWS::EC2::NatGateway
-    Properties:
-      AllocationId: !GetAtt NatEip.AllocationId
-      SubnetId: !Ref PublicSubnet
-      Tags:
-        - Key: Name
-          Value: 'ajtVPN infra-gwnat'
-
-# Tables de routage
   RouteTablePrivateSubnet:
     Type: 'AWS::EC2::RouteTable'
     Properties:
