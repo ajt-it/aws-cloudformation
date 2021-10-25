@@ -1,0 +1,242 @@
+##################################################################
+#                                                                #
+# Auteur : ajt                                                   #   
+#                                                                #  
+# Linux System Administrator | AWS Certified Solutions Architect #
+#                                                                #                  
+##################################################################
+
+
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  AWS CloudFormation Infrastructure Template for launching a WordPress website
+
+Resources:
+
+  ########## CREATE VPC & CIDR NOTATION
+
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsHostnames: true
+      EnableDnsSupport: true      
+      Tags:
+        - Key: Name
+          Value: 'ajt | VPC'
+
+
+########## CREATE SUBNETS CIDR
+
+
+
+
+########## LINK Route Table 1 & 2 to public subnet WordPress Website
+
+  # - LINK ROUTE TABLE 1 TO PUBLIC SUBNET 1
+  AttachPublicRouteTable1:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+      SubnetId: !Ref PublicSubnet2CIDR      
+
+
+  ########## CREATE ROUTES
+
+  PublicRoute1:
+    Type: AWS::EC2::Route 
+      GatewayId: !Ref ajtInternetGateway
+      RouteTableId: !Ref PublicRouteTable2   
+
+   
+  ########## SECURITY GROUPS
+
+  # - LOAD BALANCER SECURITY GROUP
+  WebsiteLoadBalancerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+
+
+  # - EC2 SECURITY GROUP
+  WebsiteEC2SecurityGroup: 
+    Type:  AWS::EC2::SecurityGroup
+    Properties:
+          ToPort: '22'                     
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: Website EC2 security group
+
+  # - DATABASE SECURITY GROUP
+  DataBaseSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+
+
+
+  ########## CONTACT
+ 
+  NotificationTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      Subscription:
+          Protocol: "email"  
+
+
+  ########## CREATE BUCKET S3 & BUCKET POLICY
+
+  BucketS3:
+    Type: AWS::S3::Bucket
+
+
+  ########## ELASTIC LOAD BALANCER & AUTO SCALING GROUP
+
+  WebsiteLaunchConfig: 
+    Type: AWS::AutoScaling::LaunchConfiguration
+    DependsOn: DatabaseInstance
+    Properties:
+      SecurityGroups:
+        - !Ref WebsiteEC2SecurityGroup
+      UserData:
+        "Fn::Base64": !Sub |
+          #!/bin/bash
+          sudo yum update -y
+          sudo yum upgrade -y                 
+
+  ########## Creates Auto Scaling Group
+
+  WebsiteAutoScalingGroup:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      - TopicARN:
+          Ref: NotificationTopic
+        NotificationTypes:
+          - 'autoscaling:EC2_INSTANCE_LAUNCH'
+          - 'autoscaling:EC2_INSTANCE_TERMINATE_ERROR'
+      
+
+  WebsiteTargetGroup: 
+      Type: AWS::ElasticLoadBalancingV2::TargetGroup
+      Properties: 
+          Value: 300
+
+
+  ########## CREATE A LISTNER ON PORT 80
+  
+  WebsiteLoadBalancer:
+    DependsOn: 
+      - PublicSubnet1CIDR
+      - PublicSubnet2CIDR
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Type: application
+      Scheme: internet-facing
+      SecurityGroups:
+        - !Ref WebsiteLoadBalancerSecurityGroup
+      Subnets:
+        - !Ref PublicSubnet1CIDR
+        - !Ref PublicSubnet2CIDR
+
+  WebsiteLoadBlancerListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties: 
+      LoadBalancerArn: !Ref WebsiteLoadBalancer
+      Port: 80
+      Protocol: HTTP
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref WebsiteTargetGroup
+
+
+########## CREATE DATABASE
+
+
+
+########## AUTO SCALING GROUP RULES
+
+
+
+########## SET UP ALARM FOR METRICS
+
+  CPUAlarmHigh:
+    DependsOn: WebsiteAutoScalingGroup
+    Type: AWS::CloudWatch::Alarm
+        - Name: AutoScalingGroupName
+          Value: !Ref WebsiteAutoScalingGroup
+      ComparisonOperator: GreaterThanThreshold
+
+  CPUAlarmLow:
+    DependsOn: WebsiteAutoScalingGroup
+    Type: AWS::CloudWatch::Alarm
+          Value: !Ref WebsiteAutoScalingGroup
+      ComparisonOperator: LessThanThreshold             
+
+
+# Sous-réseaux PRIVATE & PUBLIC VPN
+  PrivateSubnet:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      MapPublicIpOnLaunch: true
+      Tags:
+      - Key: Name
+        Value: 'ajtVPN sub-pub-infra'
+
+
+# Passerelles NAT
+  NatEip:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+  NatGateway:
+    DependsOn: ajtAttachInternetGateway
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId: !GetAtt NatEip.AllocationId
+      SubnetId: !Ref PublicSubnet
+      Tags:
+        - Key: Name
+          Value: 'ajtVPN infra-gwnat'
+
+# Tables de routage
+  RouteTablePrivateSubnet:
+    Type: 'AWS::EC2::RouteTable'
+    Properties:
+
+## Groupes de sécurité ##
+#Réseaux publiques
+  SecGrpPub:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: HTTP and SSH
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+
+
+
+  SSHSecGrp: 
+    Type:  AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Website EC2 security group 
+      SecurityGroupEgress:
+          FromPort: '22'
+          ToPort: '22'                     
+      VpcId: !Ref VPC
+
+
+## VPN ##
+
+
+## Instance Intranet ##
+  IntranetEC2: 
+    Type: 'AWS::EC2::Instance'
+    DependsOn: ConnectionRoute
+    Properties:
+    
+      UserData:
+        Fn::Base64:
+          !Sub |
+            #!/bin/bash
+            sudo apt update -y
+
+      Tags:
+      - Key: Name
+        Value: 'Intranet' 
+
+
